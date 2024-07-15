@@ -1,10 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
-import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 const Detail = (props) => {
   const { id } = useParams();
+  const jwt = useSelector((state) => state.jwt);
+  const navigate = useNavigate();
 
   const [board, setBoard] = useState({
     id: undefined,
@@ -18,27 +21,59 @@ const Detail = (props) => {
 
   useEffect(() => {
     fetchDetail(id);
-  }, []);
+  }, [id]);
 
   async function fetchDetail(boardId) {
     let response = await axios({
       url: `http://localhost:8080/api/boards/${boardId}/detail`,
+      headers: {
+        Authorization: jwt,
+      },
     });
     let responseBody = response.data;
 
     setBoard(responseBody.body);
+
+    console.log(responseBody.body.Authorization);
+    console.log(jwt);
   }
 
-  function fetchDelete(boardId) {}
+  async function fetchDelete(boardId) {
+
+    try{
+      await axios({
+        url: `http://localhost:8080/api/boards/${boardId}`,
+        method : "DELETE",
+        headers: {
+          Authorization: jwt,
+        },
+      });
+      navigate("/");
+
+    }catch(error){
+      // 200이 안떨어지면  catch로 온다
+      alert()
+    }  
+  }
 
   return (
     <div>
-      <Link to={`/updateForm/${board.id}`} className="btn btn-warning">
-        수정
-      </Link>
-      <Button className="btn btn-danger" onClick={() => fetchDelete(board.id)}>
-        삭제
-      </Button>
+      <h1>{board.owner.toString()}</h1>
+      {board.owner ? (
+        <>
+          <Link to={`/updateForm/${board.id}`} className="btn btn-warning">
+            수정
+          </Link>
+          <Button
+            className="btn btn-danger"
+            onClick={() => fetchDelete(board.id)}
+          >
+            삭제
+          </Button>
+        </>
+      ) : (
+        ""
+      )}
 
       <br />
       <br />

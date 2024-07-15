@@ -68,3 +68,23 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+## 새로운 문법
+
+```js
+// Link로 props로 보내고 싶을때 (params 쓰지 않고)
+<Link
+  to={`/updateForm/${board.id}`}
+  className="btn btn-warning"
+  state={{ title: board.title, content: board.content }}
+>
+  수정
+</Link>
+```
+
+```js
+// 받을때
+const location = useLocation();
+const { title, content } = location.state;
+```
